@@ -7,21 +7,25 @@ class MoviesController < ApplicationController
   end
 
   def index
-   
-    userratings = params[:ratings]
-    if userratings != nil and userratings.keys != []
-        @movies = Movie.where( :rating => userratings.keys )
+    @all_ratings = Hash.new
+    Movie.getRatings().each { |rating| @all_ratings[rating] = false }
+    
+    @userratings = params[:ratings]
+    if @userratings != nil and @userratings.keys != []
+        @userratings.keys.each { |rating| @all_ratings[rating] = true }
+        @movies = Movie.where( :rating => @userratings.keys )
     else
         @movies = Movie.where([])
     end   
    
     @hilite="";
-    if params[:sortby] 
-      @movies = @movies.order( params[:sortby] ) 
-      @hilite = params[:sortby]
+    @usersortby = params[:sortby] 
+    if @usersortby 
+      @movies = @movies.order( @usersortby ) 
+      @hilite = @usersortby
     end
     
-    @all_ratings = Movie.getRatings()
+   
 
     
   end
