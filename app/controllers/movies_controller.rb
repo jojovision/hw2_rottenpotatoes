@@ -7,25 +7,18 @@ class MoviesController < ApplicationController
   end
 
   def index
-     @movies = Movie.all
-     
-     sortby = params[:sortby] # retrieve movie ID from URI route
+   
     userratings = params[:ratings]
-    if userratings != nil
-      userratings = userratings.keys
-      if userratings != []
-        @movies = Movie.find( :all, :conditions => { :rating => userratings } )
-      end
-    end
-    
-      
+    if userratings != nil and userratings.keys != []
+        @movies = Movie.where( :rating => userratings.keys )
+    else
+        @movies = Movie.where([])
+    end   
    
     @hilite="";
-    if sortby == 'title'
-      @movies.sort_by! { |m| m.title }
-      @hilite = 'title'
-    elsif sortby == 'release_date'
-      @hilite = 'release_date'
+    if params[:sortby] 
+      @movies = @movies.order( params[:sortby] ) 
+      @hilite = params[:sortby]
     end
     
     @all_ratings = Movie.getRatings()
